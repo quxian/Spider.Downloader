@@ -3,7 +3,9 @@
 
   "dependencies": {
     "Extend": "1.0.0-*",
-    "NETStandard.Library": "1.6.0"
+    "NETStandard.Library": "1.6.0",
+    "Spider.IPageProcesser": "1.0.0-*",
+    "System.Threading.Thread": "4.0.0"
   },
 
   "frameworks": {

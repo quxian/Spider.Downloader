@@ -7,8 +7,8 @@
 
   <Import Project="$(VSToolsPath)\DotNet\Microsoft.DotNet.Props" Condition="'$(VSToolsPath)' != ''" />
   <PropertyGroup Label="Globals">
-    <ProjectGuid>875e72ed-35f5-4b39-bd85-8834a298bedc</ProjectGuid>
-    <RootNamespace>TestSpiderDownloader</RootNamespace>
+    <ProjectGuid>9b7620bd-2a28-4544-98aa-ff2419b6194f</ProjectGuid>
+    <RootNamespace>Spider.IPipeline</RootNamespace>
     <BaseIntermediateOutputPath Condition="'$(BaseIntermediateOutputPath)'=='' ">.\obj</BaseIntermediateOutputPath>
     <OutputPath Condition="'$(OutputPath)'=='' ">.\bin\</OutputPath>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
