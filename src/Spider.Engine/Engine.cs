@@ -30,7 +30,7 @@ namespace Spider {
             return this;
         }
 
-        public Engine AddPipelineEventListens(IPipeline pipeline) {
+        public Engine AddPipeline(IPipeline pipeline) {
             pageProcesser.AddPipelineEventListens(pipeline.Extract);
             return this;
         }

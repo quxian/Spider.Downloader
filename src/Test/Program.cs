@@ -12,8 +12,10 @@ namespace Test {
                 new Downloader(),
                 new PageProcesser(),
                 new Scheduler())
-                .AddUrls("http://webmagic.io/docs/zh/posts/ch1-overview/architecture.html")
-                .AddPipelineEventListens(new Pipeline())
+                .AddUrls("https://www.microsoft.com/en-us/")
+                .AddUrls("https://github.com/quxian/Spider.Downloader/blob/master/src/Spider.Scheduler/Scheduler.cs")
+                .AddPipeline(new Pipeline().NextPipeline(new Pipeline()))
+                .AddPipeline(new Pipeline())
                 .Run();
         }
     }

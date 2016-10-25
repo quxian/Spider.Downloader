@@ -6,5 +6,6 @@ using System.Threading.Tasks;
 namespace Spider {
     public interface IPipeline {
         void Extract(string page);
+        IPipeline NextPipeline(IPipeline nextPipeline);
     }
 }
