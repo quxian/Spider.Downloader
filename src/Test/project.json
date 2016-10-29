@@ -11,7 +11,9 @@
     },
     "NETStandard.Library": "1.6.0",
     "Spider.Engine": "1.0.0-*",
-    "Spider.Pipeline": "1.0.0-*"
+    "Spider.FindAllUrlPipeline": "1.0.0-*",
+    "Spider.Pipeline": "1.0.0-*",
+    "Spider.ProcessDOMPipeline": "1.0.0-*"
   },
 
   "frameworks": {

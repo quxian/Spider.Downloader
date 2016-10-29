@@ -5,8 +5,8 @@ using System.Linq;
 using System.Threading.Tasks;
 
 namespace Spider.Pipeline {
-    public class Pipeline : IPipeline {
-        private event Action<string> Next;
+    public class Pipeline : IPipeline<string, string> {
+        public event Action<string> Next;
         public void Extract(string page) {
             File.WriteAllText($@"C:\spider\{Guid.NewGuid().ToString("N")}", page);
             if (null == Next)
@@ -14,10 +14,11 @@ namespace Spider.Pipeline {
             Next(page);
         }
 
-        public IPipeline NextPipeline(IPipeline nextPipeline) {
+        public IPipeline<string, string> NextPipeline<V>(IPipeline<string, V> nextPipeline) {
             Next += nextPipeline.Extract;
 
             return this;
         }
+        
     }
 }

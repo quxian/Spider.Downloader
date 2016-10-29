@@ -32,6 +32,10 @@ Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Spider.IPipeline", "src\Spi
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Spider.Pipeline", "src\Spider.Pipeline\Spider.Pipeline.xproj", "{7505B537-9171-4FAE-8865-2802A54405B4}"
 EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Spider.ProcessDOMPipeline", "src\Spider.ProcessDOMPipeline\Spider.ProcessDOMPipeline.xproj", "{4AB4F18D-A2AE-43B4-89E2-1D4631C1B0BA}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Spider.FindAllUrlPipeline", "src\Spider.FindAllUrlPipeline\Spider.FindAllUrlPipeline.xproj", "{D7731731-4271-408B-93B7-35E810923730}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -82,6 +86,14 @@ Global
 		{7505B537-9171-4FAE-8865-2802A54405B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7505B537-9171-4FAE-8865-2802A54405B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7505B537-9171-4FAE-8865-2802A54405B4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4AB4F18D-A2AE-43B4-89E2-1D4631C1B0BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4AB4F18D-A2AE-43B4-89E2-1D4631C1B0BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4AB4F18D-A2AE-43B4-89E2-1D4631C1B0BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4AB4F18D-A2AE-43B4-89E2-1D4631C1B0BA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D7731731-4271-408B-93B7-35E810923730}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D7731731-4271-408B-93B7-35E810923730}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D7731731-4271-408B-93B7-35E810923730}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D7731731-4271-408B-93B7-35E810923730}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -98,5 +110,7 @@ Global
 		{F775F2CA-1356-488B-8158-948E95294D32} = {F6A5BD1A-C149-4B6A-9FFA-69DD24241562}
 		{9B7620BD-2A28-4544-98AA-FF2419B6194F} = {F6A5BD1A-C149-4B6A-9FFA-69DD24241562}
 		{7505B537-9171-4FAE-8865-2802A54405B4} = {F6A5BD1A-C149-4B6A-9FFA-69DD24241562}
+		{4AB4F18D-A2AE-43B4-89E2-1D4631C1B0BA} = {F6A5BD1A-C149-4B6A-9FFA-69DD24241562}
+		{D7731731-4271-408B-93B7-35E810923730} = {F6A5BD1A-C149-4B6A-9FFA-69DD24241562}
 	EndGlobalSection
 EndGlobal

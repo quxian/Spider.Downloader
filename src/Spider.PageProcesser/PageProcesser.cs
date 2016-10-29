@@ -5,34 +5,43 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Threading;
+using System.Net.Http;
 
 namespace Spider {
-    public class PageProcesser : IPageProcesser {
+    public class PageProcesser : IPageProcesser<HttpResponseMessage> {
         private event Action<List<string>> FindAllUrlsEvent;
-        private event Action<string> PipelineEvent;
-        private ConcurrentQueue<string> PageQueue = new ConcurrentQueue<string>();
+        private event Action<HttpResponseMessage> PipelineEvent;
+        private ConcurrentQueue<HttpResponseMessage> PageQueue = new ConcurrentQueue<HttpResponseMessage>();
+
+        private int _threadCount;
+
+        public PageProcesser(int threadCount = 1) {
+            _threadCount = threadCount;
+        }
 
         public void DequeuePage() {
             while (true) {
                 if (PageQueue.IsEmpty)
                     continue;
 
-                var page = string.Empty;
+                HttpResponseMessage page = null;
                 PageQueue.TryDequeue(out page);
-                if (string.Empty.Equals(page))
+                if (null == page)
                     continue;
 
-                var allUrls = page.FindAllUrs();
+                var allUrls = page.Content.ReadAsStringAsync().Result.FindAllUrs();
                 FindAllUrlsEvent(allUrls);
                 PipelineEvent(page);
             }
         }
 
         public void Run() {
-            new Thread(DequeuePage).Start();
+            for (int i = 0; i < _threadCount; i++) {
+                new Thread(DequeuePage).Start();
+            }
         }
 
-        public void AddPage(string page) {
+        public void AddPage(HttpResponseMessage page) {
             PageQueue.Enqueue(page);
         }
 
@@ -40,7 +49,7 @@ namespace Spider {
             FindAllUrlsEvent += action;
         }
 
-        public void AddPipelineEventListens(Action<string> action) {
+        public void AddPipelineEventListens(Action<HttpResponseMessage> action) {
             PipelineEvent += action;
         }
     }

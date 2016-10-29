@@ -9,8 +9,13 @@ namespace Spider {
     public class Scheduler : IScheduler {
         private ConcurrentQueue<string> UrlQueue = new ConcurrentQueue<string>();
         private HashSet<string> UrlSet = new HashSet<string>();
-
         private event Action<string> UrlDequeueEvent;
+
+        private int _threadCount;
+
+        public Scheduler(int threadCount = 1) {
+            _threadCount = threadCount;
+        }
 
         public void AddUrlDequeueEventListens(Action<string> action) {
             UrlDequeueEvent += action;
@@ -21,7 +26,9 @@ namespace Spider {
         }
 
         public void Run() {
-            new Thread(UrlDequeue).Start();
+            for (int i = 0; i < _threadCount; i++) {
+                new Thread(UrlDequeue).Start();
+            }
         }
 
         private void UrlDequeue() {

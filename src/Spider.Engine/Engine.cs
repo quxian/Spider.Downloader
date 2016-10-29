@@ -2,18 +2,19 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Spider {
     public class Engine {
-        private readonly IDownloader downloader;
-        private readonly IPageProcesser pageProcesser;
+        private readonly IDownloader<HttpResponseMessage> downloader;
+        private readonly IPageProcesser<HttpResponseMessage> pageProcesser;
         private readonly IScheduler scheduler;
 
         public Engine(
-            IDownloader downloader,
-            IPageProcesser pageProcesser,
+            IDownloader<HttpResponseMessage> downloader,
+            IPageProcesser<HttpResponseMessage> pageProcesser,
             IScheduler scheduler
             ) {
             this.downloader = downloader;
@@ -30,7 +31,7 @@ namespace Spider {
             return this;
         }
 
-        public Engine AddPipeline(IPipeline pipeline) {
+        public Engine AddPipeline<T>(IPipeline<HttpResponseMessage, T> pipeline) {
             pageProcesser.AddPipelineEventListens(pipeline.Extract);
             return this;
         }
@@ -42,9 +43,6 @@ namespace Spider {
 
             pageProcesser.AddFindAllUrlsEventListens(urls => {
                 scheduler.AddUrls(urls);
-            });
-
-            pageProcesser.AddPipelineEventListens(page => {
             });
 
             scheduler.AddUrlDequeueEventListens(url => {

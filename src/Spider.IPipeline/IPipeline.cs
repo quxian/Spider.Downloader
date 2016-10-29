@@ -4,8 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 
 namespace Spider {
-    public interface IPipeline {
-        void Extract(string page);
-        IPipeline NextPipeline(IPipeline nextPipeline);
+    public interface IPipeline<T,U> {
+        event Action<U> Next;
+        void Extract(T page);
+        IPipeline<T,U> NextPipeline<V>(IPipeline<U,V> nextPipeline);
     }
 }

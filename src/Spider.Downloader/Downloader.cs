@@ -7,11 +7,15 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace Spider {
-    public class Downloader : IDownloader {
+    public class Downloader : IDownloader<HttpResponseMessage> {
         private readonly HttpClient http = new HttpClient();
         private ConcurrentQueue<string> DawnloadPageUrlQueue = new ConcurrentQueue<string>();
-        private event Action<string> DownloadPageEvent;
-     
+        private event Action<HttpResponseMessage> DownloadPageEvent;
+
+        private int _threadCount;
+        public Downloader(int threadCount = 1) {
+            _threadCount = threadCount;
+        }
         private async void DownloadPage() {
             while (true) {
                 if (DawnloadPageUrlQueue.IsEmpty)
@@ -20,20 +24,24 @@ namespace Spider {
                 DawnloadPageUrlQueue.TryDequeue(out url);
                 if (string.Empty.Equals(url))
                     continue;
-                var result = await http.GetStringAsync(url);
-                DownloadPageEvent(result);
+                var httpResponseMessage = await http.GetAsync(url);
+                if (!httpResponseMessage.IsSuccessStatusCode)
+                    return;
+                DownloadPageEvent(httpResponseMessage);
             }
         }
 
         public void Run() {
-            new Thread(DownloadPage).Start();
+            for (int i = 0; i < _threadCount; i++) {
+                new Thread(DownloadPage).Start();
+            }
         }
 
         public void AddUrl(string url) {
             DawnloadPageUrlQueue.Enqueue(url);
         }
 
-        public void AddDownloadPageEventListens(Action<string> action) {
+        public void AddDownloadPageEventListens(Action<HttpResponseMessage> action) {
             DownloadPageEvent += action;
         }
     }

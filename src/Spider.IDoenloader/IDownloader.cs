@@ -4,9 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 
 namespace Spider {
-    public interface IDownloader {
+    public interface IDownloader<T> {
         void Run();
         void AddUrl(string url);
-        void AddDownloadPageEventListens(Action<string> action);
+        void AddDownloadPageEventListens(Action<T> action);
     }
 }
