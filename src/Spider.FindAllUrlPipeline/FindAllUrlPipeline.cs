@@ -1,4 +1,5 @@
-﻿using HtmlAgilityPack;
+﻿using Extend;
+using HtmlAgilityPack;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,17 +11,8 @@ namespace Spider {
         public event Action<List<string>> Next;
 
         public void Extract(HtmlDocument page) {
-            var urls = new List<string>();
-            var links = page.DocumentNode.SelectNodes("//a[@href]");
-            if (null == links)
-                return;
-            foreach (var link in links) {
-                var hrefValue = link.Attributes["href"].Value;
-                urls.Add(hrefValue);
-                Console.WriteLine(hrefValue);
-            }
-
-            if (null == Next)
+            var urls = page.FindAllUrls();
+            if (null == Next || null == urls || urls.Count == 0)
                 return;
             Next(urls);
         }

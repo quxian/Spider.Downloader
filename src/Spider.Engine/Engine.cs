@@ -8,13 +8,13 @@ using System.Threading.Tasks;
 
 namespace Spider {
     public class Engine {
-        private readonly IDownloader<HttpResponseMessage> downloader;
-        private readonly IPageProcesser<HttpResponseMessage> pageProcesser;
+        private readonly IDownloader<string> downloader;
+        private readonly IPageProcesser<string> pageProcesser;
         private readonly IScheduler scheduler;
 
         public Engine(
-            IDownloader<HttpResponseMessage> downloader,
-            IPageProcesser<HttpResponseMessage> pageProcesser,
+            IDownloader<string> downloader,
+            IPageProcesser<string> pageProcesser,
             IScheduler scheduler
             ) {
             this.downloader = downloader;
@@ -31,7 +31,7 @@ namespace Spider {
             return this;
         }
 
-        public Engine AddPipeline<T>(IPipeline<HttpResponseMessage, T> pipeline) {
+        public Engine AddPipeline<T>(IPipeline<string, T> pipeline) {
             pageProcesser.AddPipelineEventListens(pipeline.Extract);
             return this;
         }

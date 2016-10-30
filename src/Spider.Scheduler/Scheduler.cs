@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Spider {
     public class Scheduler : IScheduler {
         private ConcurrentQueue<string> UrlQueue = new ConcurrentQueue<string>();
-        private HashSet<string> UrlSet = new HashSet<string>();
+        private ConcurrentDictionary<string, bool> UrlSet = new ConcurrentDictionary<string, bool>();
         private event Action<string> UrlDequeueEvent;
 
         private int _threadCount;
@@ -37,11 +37,11 @@ namespace Spider {
                     continue;
                 var url = string.Empty;
                 UrlQueue.TryDequeue(out url);
-                if (string.Empty.Equals(url))
+                if (string.Empty.Equals(url) || null == url)
                     continue;
-                if (UrlSet.Contains(url))
+                if (UrlSet.ContainsKey(url))
                     continue;
-                UrlSet.Add(url);
+                UrlSet.TryAdd(url, true);
                 UrlDequeueEvent(url);
             }
         }

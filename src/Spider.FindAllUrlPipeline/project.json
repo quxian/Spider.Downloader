@@ -2,6 +2,7 @@
   "version": "1.0.0-*",
 
   "dependencies": {
+    "Extend": "1.0.0-*",
     "HtmlAgilityPack.NetCore": "1.5.0.1",
     "NETStandard.Library": "1.6.0",
     "Spider.IPipeline": "1.0.0-*"

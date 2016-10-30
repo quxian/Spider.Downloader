@@ -6,18 +6,18 @@ using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace Spider.ProcessDOMPipeline {
-    public class ProcessDOMPipeline : IPipeline<HttpResponseMessage, HtmlDocument> {
+    public class ProcessDOMPipeline : IPipeline<string, HtmlDocument> {
         public event Action<HtmlDocument> Next;
 
-        public void Extract(HttpResponseMessage page) {
+        public void Extract(string page) {
             var htmlDOM = new HtmlDocument();
-            htmlDOM.LoadHtml(page.Content.ReadAsStringAsync().Result);
+            htmlDOM.LoadHtml(page);
             if (null == Next)
                 return;
             Next(htmlDOM);
         }
 
-        public IPipeline<HttpResponseMessage, HtmlDocument> NextPipeline<V>(IPipeline<HtmlDocument, V> nextPipeline) {
+        public IPipeline<string, HtmlDocument> NextPipeline<V>(IPipeline<HtmlDocument, V> nextPipeline) {
             Next += nextPipeline.Extract;
 
             return this;

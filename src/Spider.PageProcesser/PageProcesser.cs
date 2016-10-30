@@ -8,10 +8,10 @@ using System.Threading;
 using System.Net.Http;
 
 namespace Spider {
-    public class PageProcesser : IPageProcesser<HttpResponseMessage> {
+    public class PageProcesser : IPageProcesser<string> {
         private event Action<List<string>> FindAllUrlsEvent;
-        private event Action<HttpResponseMessage> PipelineEvent;
-        private ConcurrentQueue<HttpResponseMessage> PageQueue = new ConcurrentQueue<HttpResponseMessage>();
+        private event Action<string> PipelineEvent;
+        private ConcurrentQueue<string> PageQueue = new ConcurrentQueue<string>();
 
         private int _threadCount;
 
@@ -24,13 +24,14 @@ namespace Spider {
                 if (PageQueue.IsEmpty)
                     continue;
 
-                HttpResponseMessage page = null;
+                var page = string.Empty;
                 PageQueue.TryDequeue(out page);
-                if (null == page)
+                if (string.Empty.Equals(page))
                     continue;
 
-                var allUrls = page.Content.ReadAsStringAsync().Result.FindAllUrs();
-                FindAllUrlsEvent(allUrls);
+                var allUrls = page.FindAllUrls();
+                if (allUrls?.Count > 0)
+                    FindAllUrlsEvent(allUrls);
                 PipelineEvent(page);
             }
         }
@@ -41,7 +42,7 @@ namespace Spider {
             }
         }
 
-        public void AddPage(HttpResponseMessage page) {
+        public void AddPage(string page) {
             PageQueue.Enqueue(page);
         }
 
@@ -49,7 +50,7 @@ namespace Spider {
             FindAllUrlsEvent += action;
         }
 
-        public void AddPipelineEventListens(Action<HttpResponseMessage> action) {
+        public void AddPipelineEventListens(Action<string> action) {
             PipelineEvent += action;
         }
     }

@@ -13,7 +13,9 @@
     "Spider.Engine": "1.0.0-*",
     "Spider.FindAllUrlPipeline": "1.0.0-*",
     "Spider.Pipeline": "1.0.0-*",
-    "Spider.ProcessDOMPipeline": "1.0.0-*"
+    "Spider.ProcessDOMPipeline": "1.0.0-*",
+    "Spider.WriteUrlsToConsolePipeline": "1.0.0-*",
+    "Spider.WriteUrlsToFilePileline": "1.0.0-*"
   },
 
   "frameworks": {

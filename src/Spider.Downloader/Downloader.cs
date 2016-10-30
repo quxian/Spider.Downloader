@@ -3,17 +3,19 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Spider {
-    public class Downloader : IDownloader<HttpResponseMessage> {
+    public class Downloader : IDownloader<string> {
         private readonly HttpClient http = new HttpClient();
         private ConcurrentQueue<string> DawnloadPageUrlQueue = new ConcurrentQueue<string>();
-        private event Action<HttpResponseMessage> DownloadPageEvent;
+        private event Action<string> DownloadPageEvent;
 
         private int _threadCount;
         public Downloader(int threadCount = 1) {
+            System.Text.Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             _threadCount = threadCount;
         }
         private async void DownloadPage() {
@@ -24,10 +26,13 @@ namespace Spider {
                 DawnloadPageUrlQueue.TryDequeue(out url);
                 if (string.Empty.Equals(url))
                     continue;
-                var httpResponseMessage = await http.GetAsync(url);
-                if (!httpResponseMessage.IsSuccessStatusCode)
-                    return;
-                DownloadPageEvent(httpResponseMessage);
+                try {
+                    var page = await http.GetStringAsync(url);
+                    DownloadPageEvent(page);
+                } catch (Exception e) {
+                    Console.WriteLine(new { url = url, Exception = e });
+                }
+
             }
         }
 
@@ -41,7 +46,7 @@ namespace Spider {
             DawnloadPageUrlQueue.Enqueue(url);
         }
 
-        public void AddDownloadPageEventListens(Action<HttpResponseMessage> action) {
+        public void AddDownloadPageEventListens(Action<string> action) {
             DownloadPageEvent += action;
         }
     }

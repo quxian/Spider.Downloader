@@ -4,6 +4,7 @@
   "dependencies": {
     "NETStandard.Library": "1.6.0",
     "Spider.IDoenloader": "1.0.0-*",
+    "System.Text.Encoding.CodePages": "4.0.1",
     "System.Threading.Thread": "4.0.0"
   },
 
