@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Spider.Model;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -8,13 +9,13 @@ using System.Threading.Tasks;
 
 namespace Spider {
     public class Engine : IDisposable {
-        private readonly IDownloader<string> downloader;
-        private readonly IPageProcesser<string> pageProcesser;
+        private readonly IDownloader<DownloadResult> downloader;
+        private readonly IPageProcesser<DownloadResult> pageProcesser;
         private readonly IScheduler scheduler;
         private event Action onDispose;
         public Engine(
-            IDownloader<string> downloader,
-            IPageProcesser<string> pageProcesser,
+            IDownloader<DownloadResult> downloader,
+            IPageProcesser<DownloadResult> pageProcesser,
             IScheduler scheduler
             ) {
             this.downloader = downloader;
@@ -32,7 +33,7 @@ namespace Spider {
             return this;
         }
 
-        public Engine AddPipeline<T>(IPipeline<string, T> pipeline) {
+        public Engine AddPipeline<T>(IPipeline<DownloadResult, T> pipeline) {
             pageProcesser.AddPipelineEventListens(pipeline.Extract);
             onDispose += pipeline.Dispose;
             return this;

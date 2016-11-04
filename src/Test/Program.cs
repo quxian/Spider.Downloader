@@ -14,7 +14,7 @@ namespace Test {
                  new PageProcesser(),
                  new Scheduler())
                  .AddUrls("https://www.baidu.com/")
-                 //.AddUrls("http://www.sina.com.cn/")
+                 .AddUrls("http://www.sina.com.cn/")
                  .AddUrls("http://www.163.com/")
                  .AddUrls("http://www.ifeng.com/")
                  .AddUrls("http://mai.sogou.com/")

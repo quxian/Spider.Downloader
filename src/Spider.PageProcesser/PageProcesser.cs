@@ -6,16 +6,19 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Threading;
 using System.Net.Http;
+using Spider.Model;
 
 namespace Spider {
-    public class PageProcesser : IPageProcesser<string> {
+    public class PageProcesser : IPageProcesser<DownloadResult> {
         private event Action<List<string>> FindAllUrlsEvent;
-        private event Action<string> PipelineEvent;
-        private ConcurrentQueue<string> PageQueue = new ConcurrentQueue<string>();
+        public event Action<DownloadResult> PipelineEvent;
+        private ConcurrentQueue<DownloadResult> PageQueue = new ConcurrentQueue<DownloadResult>();
 
         private int _threadCount;
         private List<Thread> _threads = new List<Thread>();
         private bool _threadIsStop = false;
+
+        private SpinLock _spinLcok = new SpinLock(false);
 
         public PageProcesser(int threadCount = 1) {
             _threadCount = threadCount;
@@ -25,16 +28,23 @@ namespace Spider {
             while (!_threadIsStop) {
                 if (PageQueue.IsEmpty)
                     continue;
+                var lockTake = false;
 
-                var page = string.Empty;
-                PageQueue.TryDequeue(out page);
-                if (string.Empty.Equals(page))
-                    continue;
                 ThreadPool.QueueUserWorkItem(new WaitCallback(x => {
-                    var allUrls = page.FindAllUrls();
-                    if (allUrls?.Count > 0) {
-                        FindAllUrlsEvent?.Invoke(allUrls);
-                        PipelineEvent?.Invoke(page);
+                    try {
+                        _spinLcok.TryEnter(ref lockTake);
+                        DownloadResult page = null;
+                        PageQueue.TryDequeue(out page);
+                        if (null == page)
+                            return;
+                        var allUrls = page.Page.FindAllUrls();
+                        if (allUrls?.Count > 0) {
+                            FindAllUrlsEvent?.Invoke(allUrls);
+                            PipelineEvent?.Invoke(page);
+                        }
+                    } finally {
+                        if (lockTake)
+                            _spinLcok.Exit(false);
                     }
                 }));
             }
@@ -47,7 +57,7 @@ namespace Spider {
             _threads.ForEach(thread => thread.Start());
         }
 
-        public void AddPage(string page) {
+        public void AddPage(DownloadResult page) {
             PageQueue.Enqueue(page);
         }
 
@@ -55,7 +65,7 @@ namespace Spider {
             FindAllUrlsEvent += action;
         }
 
-        public void AddPipelineEventListens(Action<string> action) {
+        public void AddPipelineEventListens(Action<DownloadResult> action) {
             PipelineEvent += action;
         }
 

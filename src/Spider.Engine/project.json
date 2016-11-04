@@ -5,6 +5,7 @@
     "NETStandard.Library": "1.6.0",
     "Spider.Downloader": "1.0.0-*",
     "Spider.IPipeline": "1.0.0-*",
+    "Spider.Model": "1.0.0-*",
     "Spider.PageProcesser": "1.0.0-*",
     "Spider.Scheduler": "1.0.0-*"
   },

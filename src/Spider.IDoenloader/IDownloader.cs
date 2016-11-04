@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 namespace Spider {
     public interface IDownloader<T> : IDisposable {
+        event Action<T> DownloadPageEvent;
         void Run();
         void AddUrl(string url);
         void AddDownloadPageEventListens(Action<T> action);
