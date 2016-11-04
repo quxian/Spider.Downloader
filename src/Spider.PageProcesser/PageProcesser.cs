@@ -14,13 +14,15 @@ namespace Spider {
         private ConcurrentQueue<string> PageQueue = new ConcurrentQueue<string>();
 
         private int _threadCount;
+        private List<Thread> _threads = new List<Thread>();
+        private bool _threadIsStop = false;
 
         public PageProcesser(int threadCount = 1) {
             _threadCount = threadCount;
         }
 
         public void DequeuePage() {
-            while (true) {
+            while (!_threadIsStop) {
                 if (PageQueue.IsEmpty)
                     continue;
 
@@ -28,18 +30,21 @@ namespace Spider {
                 PageQueue.TryDequeue(out page);
                 if (string.Empty.Equals(page))
                     continue;
-
-                var allUrls = page.FindAllUrls();
-                if (allUrls?.Count > 0)
-                    FindAllUrlsEvent(allUrls);
-                PipelineEvent(page);
+                ThreadPool.QueueUserWorkItem(new WaitCallback(x => {
+                    var allUrls = page.FindAllUrls();
+                    if (allUrls?.Count > 0) {
+                        FindAllUrlsEvent?.Invoke(allUrls);
+                        PipelineEvent?.Invoke(page);
+                    }
+                }));
             }
         }
 
         public void Run() {
-            for (int i = 0; i < _threadCount; i++) {
-                new Thread(DequeuePage).Start();
+            for (int i = 0; i < 1; i++) {
+                _threads.Add(new Thread(DequeuePage));
             }
+            _threads.ForEach(thread => thread.Start());
         }
 
         public void AddPage(string page) {
@@ -52,6 +57,11 @@ namespace Spider {
 
         public void AddPipelineEventListens(Action<string> action) {
             PipelineEvent += action;
+        }
+
+        public void Dispose() {
+            _threadIsStop = true;
+            _threads.ForEach(thread => thread.Join());
         }
     }
 }

@@ -7,11 +7,11 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace Spider {
-    public class Engine {
+    public class Engine : IDisposable {
         private readonly IDownloader<string> downloader;
         private readonly IPageProcesser<string> pageProcesser;
         private readonly IScheduler scheduler;
-
+        private event Action onDispose;
         public Engine(
             IDownloader<string> downloader,
             IPageProcesser<string> pageProcesser,
@@ -22,8 +22,9 @@ namespace Spider {
             this.scheduler = scheduler;
         }
 
-        public void Run() {
+        public Engine Run() {
             new Thread(EngineCore).Start();
+            return this;
         }
 
         public Engine AddUrls(string bootstrapUrl) {
@@ -33,6 +34,7 @@ namespace Spider {
 
         public Engine AddPipeline<T>(IPipeline<string, T> pipeline) {
             pageProcesser.AddPipelineEventListens(pipeline.Extract);
+            onDispose += pipeline.Dispose;
             return this;
         }
 
@@ -52,6 +54,14 @@ namespace Spider {
             downloader.Run();
             pageProcesser.Run();
             scheduler.Run();
+        }
+
+        public void Dispose() {
+            downloader.Dispose();
+            pageProcesser.Dispose();
+            scheduler.Dispose();
+
+            onDispose?.Invoke();
         }
     }
 }

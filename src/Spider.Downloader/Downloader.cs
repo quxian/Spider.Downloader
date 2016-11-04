@@ -9,37 +9,45 @@ using System.Threading.Tasks;
 
 namespace Spider {
     public class Downloader : IDownloader<string> {
-        private readonly HttpClient http = new HttpClient();
+        private static readonly HttpClient http = new HttpClient();
         private ConcurrentQueue<string> DawnloadPageUrlQueue = new ConcurrentQueue<string>();
         private event Action<string> DownloadPageEvent;
+        private List<Task> tasks = new List<Task>();
+        private SemaphoreSlim throttler;
 
         private int _threadCount;
+        private List<Thread> _threads = new List<Thread>();
+        private bool _threadIsStop = false;
         public Downloader(int threadCount = 1) {
-            System.Text.Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             _threadCount = threadCount;
         }
-        private async void DownloadPage() {
-            while (true) {
+        private void DownloadPage() {
+            while (!_threadIsStop) {
                 if (DawnloadPageUrlQueue.IsEmpty)
                     continue;
                 var url = string.Empty;
                 DawnloadPageUrlQueue.TryDequeue(out url);
                 if (string.Empty.Equals(url))
                     continue;
-                try {
-                    var page = await http.GetStringAsync(url);
-                    DownloadPageEvent(page);
-                } catch (Exception e) {
-                    Console.WriteLine(new { url = url, Exception = e });
-                }
+
+                ThreadPool.QueueUserWorkItem(new WaitCallback(async x => {
+                    try {
+                        var page = await http.GetStringAsync(url);
+                        DownloadPageEvent?.Invoke(page);
+                    } catch (Exception e) {
+                        Console.WriteLine(new { url = url, Exception = e });
+                    }
+                }));
 
             }
         }
 
         public void Run() {
-            for (int i = 0; i < _threadCount; i++) {
-                new Thread(DownloadPage).Start();
+            for (int i = 0; i < 1; i++) {
+                _threads.Add(new Thread(DownloadPage));
             }
+            _threads.ForEach(thread => thread.Start());
         }
 
         public void AddUrl(string url) {
@@ -48,6 +56,13 @@ namespace Spider {
 
         public void AddDownloadPageEventListens(Action<string> action) {
             DownloadPageEvent += action;
+        }
+
+        public void Dispose() {
+            _threadIsStop = true;
+            _threads.ForEach(thread => thread.Join());
+            
+            http.Dispose();
         }
     }
 }

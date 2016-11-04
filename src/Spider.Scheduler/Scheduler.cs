@@ -12,6 +12,8 @@ namespace Spider {
         private event Action<string> UrlDequeueEvent;
 
         private int _threadCount;
+        private List<Thread> _threads = new List<Thread>();
+        private bool _threadIsStop = false;
 
         public Scheduler(int threadCount = 1) {
             _threadCount = threadCount;
@@ -26,13 +28,14 @@ namespace Spider {
         }
 
         public void Run() {
-            for (int i = 0; i < _threadCount; i++) {
-                new Thread(UrlDequeue).Start();
+            for (int i = 0; i < 1; i++) {
+                _threads.Add(new Thread(UrlDequeue));
             }
+            _threads.ForEach(thread => thread.Start());
         }
 
         private void UrlDequeue() {
-            while (true) {
+            while (!_threadIsStop) {
                 if (UrlQueue.IsEmpty)
                     continue;
                 var url = string.Empty;
@@ -42,8 +45,14 @@ namespace Spider {
                 if (UrlSet.ContainsKey(url))
                     continue;
                 UrlSet.TryAdd(url, true);
-                UrlDequeueEvent(url);
+
+                UrlDequeueEvent?.Invoke(url);
             }
+        }
+
+        public void Dispose() {
+            _threadIsStop = true;
+            _threads.ForEach(thread => thread.Join());
         }
     }
 }
